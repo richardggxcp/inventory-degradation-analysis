@@ -196,6 +196,11 @@ See `docs/tenure_queries_verification.md` for detailed verification notes.
 
 ### SQL Queries (`sql/`)
 
+#### Original Validated Queries (Baseline)
+- `00_spot_allocation_monthly_original.sql` - Original validated spot allocation (All Fitness, SA Fitness, Non-SA Fitness)
+- `00_disabled_schedules_monthly_original.sql` - Original validated disabled schedules % (All Fitness, SA Fitness, Non-SA Fitness)
+- `00_soft_churn_monthly_original.sql` - Original validated soft churn rate (All Fitness, SA Fitness, Non-SA Fitness)
+
 #### Monthly by Tenure (Charts 1-3)
 - `01_spot_allocation_monthly_by_tenure.sql` - Monthly spot allocation segmented by tenure
 - `02_disabled_schedules_monthly_by_tenure.sql` - Monthly disabled schedules % by tenure
