@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Run all three queries with rolling 7-day aggregation for Oct-Nov 2025
-Daily data with R7 rolling averages
+Run all three queries with rolling 7-day aggregation for Oct-Nov 2024 & 2025
+Daily data with R7 rolling averages - includes year-over-year comparison
 """
 import sys
 import os
@@ -65,7 +65,7 @@ def format_date(date_val):
 def display_results(query_name, df):
     """Display query results in a readable format"""
     print(f"\n{'='*100}")
-    print(f"{query_name.upper().replace('_', ' ')} - ROLLING 7-DAY (Oct-Nov 2025)")
+    print(f"{query_name.upper().replace('_', ' ')} - ROLLING 7-DAY (Oct-Nov 2024 & 2025)")
     print(f"{'='*100}\n")
     
     # Get date column
@@ -119,7 +119,7 @@ def main():
     print("2. Disabled Schedules (% of total schedules)")
     print("3. Soft Churn Rate")
     print("\nSegments: All Fitness, SA Fitness, Non-SA Fitness")
-    print("Time Period: Oct 1 - Nov 30, 2025")
+    print("Time Period: Oct 1 - Nov 30, 2024 & 2025 (year-over-year comparison)")
     print("Aggregation: Daily + Rolling 7-day (R7) averages")
     print("="*100)
     

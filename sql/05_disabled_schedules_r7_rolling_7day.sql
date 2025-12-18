@@ -1,6 +1,7 @@
--- Chart 5: Disabled Schedules - R7 Rolling 7-Day (Oct-Nov 2025)
+-- Chart 5: Disabled Schedules - R7 Rolling 7-Day (Oct-Nov 2024 & 2025)
 -- Segments: All Fitness, SA Fitness, Non-SA Fitness
 -- Outputs final chart-ready R7 percentage values directly from SQL
+-- Includes both 2024 and 2025 for year-over-year comparison
 
 with vids as 
 (
@@ -28,7 +29,7 @@ daily_metrics as
                 and unbookable_reason ilike '%schedule disable%' then schedule_id end) as nonSA_disabled_scheds
     from vids v
     join cp_bi_derived.datapipeline.sched_schedules s on s.venue_id = v.venue_id
-    and s.start_date >= '2025-10-01' and s.start_date < '2025-12-01'
+    and s.start_date >= '2024-10-01' and s.start_date < '2025-12-01'
     and (unbookable_reason is null or (unbookable_reason ilike '%schedule%' or unbookable_reason ilike '%zero spots%'))
     and s.class_id not in (select distinct class_id from cp_bi_derived.datapipeline.ineligible_classes)
     group by 1

@@ -1,6 +1,7 @@
--- Chart 4: Spot Allocation - R7 Rolling 7-Day (Oct-Nov 2025)
+-- Chart 4: Spot Allocation - R7 Rolling 7-Day (Oct-Nov 2024 & 2025)
 -- Segments: All Fitness, SA Fitness, Non-SA Fitness
 -- Outputs final chart-ready R7 values directly from SQL
+-- Includes both 2024 and 2025 for year-over-year comparison
 
 with all_fitness_vids as 
 (
@@ -26,7 +27,7 @@ avg_spot_alloc_per_venue_per_day as
                end) as cp_alloc_adjusted
     from all_fitness_vids v
     join cp_bi_derived.datapipeline.sched_schedules s on s.venue_id = v.venue_id
-    and s.start_date >= '2025-10-01' and s.start_date < '2025-12-01'
+    and s.start_date >= '2024-10-01' and s.start_date < '2025-12-01'
     and unbookable_reason is null
     and s.class_id not in (select distinct class_id from cp_bi_derived.datapipeline.ineligible_classes)
     group by 1, 2, 3
