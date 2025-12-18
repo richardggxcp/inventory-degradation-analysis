@@ -10,10 +10,15 @@ import pandas as pd
 
 from snowflake_connection import execute_query, close_connection
 
+# Get the project root directory (parent of scripts directory)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+SQL_DIR = os.path.join(PROJECT_ROOT, 'sql')
+
 QUERIES = {
-    'spot_allocation': 'spot_allocation_rolling_7day.sql',
-    'disabled_schedules': 'disabled_schedules_rolling_7day.sql',
-    'soft_churn': 'soft_churn_rolling_7day.sql'
+    'spot_allocation': os.path.join(SQL_DIR, '04_spot_allocation_r7_rolling_7day.sql'),
+    'disabled_schedules': os.path.join(SQL_DIR, '05_disabled_schedules_r7_rolling_7day.sql'),
+    'soft_churn': os.path.join(SQL_DIR, '06_soft_churn_r7_rolling_7day.sql')
 }
 
 def run_query(query_name, query_file):
@@ -72,43 +77,34 @@ def display_results(query_name, df):
     date_col = [col for col in df.columns if 'date' in col.lower()][0]
     
     if query_name == 'spot_allocation':
-        print(f"{'Date':<12} {'All Fitness (Daily)':<20} {'All Fitness (R7)':<20} {'SA Fitness (Daily)':<20} {'SA Fitness (R7)':<20} {'Non-SA (Daily)':<20} {'Non-SA (R7)':<20}")
-        print("-" * 140)
+        print(f"{'Date':<12} {'All Fitness (R7)':<20} {'SA Fitness (R7)':<20} {'Non-SA (R7)':<20}")
+        print("-" * 80)
         for _, row in df.iterrows():
             date_str = format_date(row[date_col])
-            all_daily = round(float(row.get('avg_spots_all_fitness_daily', 0) or 0), 2)
-            all_r7 = round(float(row.get('avg_spots_all_fitness_r7', 0) or 0), 2)
-            sa_daily = round(float(row.get('avg_spots_sa_fitness_daily', 0) or 0), 2)
-            sa_r7 = round(float(row.get('avg_spots_sa_fitness_r7', 0) or 0), 2)
-            nonsa_daily = round(float(row.get('avg_spots_nonsa_fitness_daily', 0) or 0), 2)
-            nonsa_r7 = round(float(row.get('avg_spots_nonsa_fitness_r7', 0) or 0), 2)
-            print(f"{date_str:<12} {all_daily:<20.2f} {all_r7:<20.2f} {sa_daily:<20.2f} {sa_r7:<20.2f} {nonsa_daily:<20.2f} {nonsa_r7:<20.2f}")
+            all_r7 = round(float(row.get('all_fitness_r7', 0) or 0), 2)
+            sa_r7 = round(float(row.get('sa_fitness_r7', 0) or 0), 2)
+            nonsa_r7 = round(float(row.get('nonsa_fitness_r7', 0) or 0), 2)
+            print(f"{date_str:<12} {all_r7:<20.2f} {sa_r7:<20.2f} {nonsa_r7:<20.2f}")
     
     elif query_name == 'disabled_schedules':
-        print(f"{'Date':<12} {'All Fitness (Daily %)':<22} {'All Fitness (R7 %)':<22} {'SA Fitness (Daily %)':<22} {'SA Fitness (R7 %)':<22} {'Non-SA (Daily %)':<22} {'Non-SA (R7 %)':<22}")
-        print("-" * 140)
+        print(f"{'Date':<12} {'All Fitness (R7 %)':<22} {'SA Fitness (R7 %)':<22} {'Non-SA (R7 %)':<22}")
+        print("-" * 80)
         for _, row in df.iterrows():
             date_str = format_date(row[date_col])
-            all_daily = round(float(row.get('disabled_rate_all_fitness_daily_pct', 0) or 0), 2)
-            all_r7 = round(float(row.get('disabled_rate_all_fitness_r7_pct', 0) or 0), 2)
-            sa_daily = round(float(row.get('disabled_rate_sa_fitness_daily_pct', 0) or 0), 2)
-            sa_r7 = round(float(row.get('disabled_rate_sa_fitness_r7_pct', 0) or 0), 2)
-            nonsa_daily = round(float(row.get('disabled_rate_nonsa_fitness_daily_pct', 0) or 0), 2)
-            nonsa_r7 = round(float(row.get('disabled_rate_nonsa_fitness_r7_pct', 0) or 0), 2)
-            print(f"{date_str:<12} {all_daily:<22.2f} {all_r7:<22.2f} {sa_daily:<22.2f} {sa_r7:<22.2f} {nonsa_daily:<22.2f} {nonsa_r7:<22.2f}")
+            all_r7 = round(float(row.get('all_fitness_r7_pct', 0) or 0), 2)
+            sa_r7 = round(float(row.get('sa_fitness_r7_pct', 0) or 0), 2)
+            nonsa_r7 = round(float(row.get('nonsa_fitness_r7_pct', 0) or 0), 2)
+            print(f"{date_str:<12} {all_r7:<22.2f} {sa_r7:<22.2f} {nonsa_r7:<22.2f}")
     
     elif query_name == 'soft_churn':
-        print(f"{'Date':<12} {'All Fitness (Daily %)':<22} {'All Fitness (R7 %)':<22} {'SA Fitness (Daily %)':<22} {'SA Fitness (R7 %)':<22} {'Non-SA (Daily %)':<22} {'Non-SA (R7 %)':<22}")
-        print("-" * 140)
+        print(f"{'Date':<12} {'All Fitness (R7 %)':<22} {'SA Fitness (R7 %)':<22} {'Non-SA (R7 %)':<22}")
+        print("-" * 80)
         for _, row in df.iterrows():
             date_str = format_date(row[date_col])
-            all_daily = round(float(row.get('soft_churn_rate_all_fitness_daily_pct', 0) or 0), 2)
-            all_r7 = round(float(row.get('soft_churn_rate_all_fitness_r7_pct', 0) or 0), 2)
-            sa_daily = round(float(row.get('soft_churn_rate_sa_fitness_daily_pct', 0) or 0), 2)
-            sa_r7 = round(float(row.get('soft_churn_rate_sa_fitness_r7_pct', 0) or 0), 2)
-            nonsa_daily = round(float(row.get('soft_churn_rate_nonsa_fitness_daily_pct', 0) or 0), 2)
-            nonsa_r7 = round(float(row.get('soft_churn_rate_nonsa_fitness_r7_pct', 0) or 0), 2)
-            print(f"{date_str:<12} {all_daily:<22.2f} {all_r7:<22.2f} {sa_daily:<22.2f} {sa_r7:<22.2f} {nonsa_daily:<22.2f} {nonsa_r7:<22.2f}")
+            all_r7 = round(float(row.get('all_fitness_r7_pct', 0) or 0), 2)
+            sa_r7 = round(float(row.get('sa_fitness_r7_pct', 0) or 0), 2)
+            nonsa_r7 = round(float(row.get('nonsa_fitness_r7_pct', 0) or 0), 2)
+            print(f"{date_str:<12} {all_r7:<22.2f} {sa_r7:<22.2f} {nonsa_r7:<22.2f}")
 
 def main():
     print("="*100)
