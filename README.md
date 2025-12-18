@@ -12,7 +12,7 @@ This project analyzes three key metrics that indicate inventory degradation:
 
 The analysis is performed across multiple dimensions:
 - **Segmentation**: All Fitness, SA Fitness, Non-SA Fitness, and by Partner Tenure (>24mo vs ≤24mo)
-- **Time Periods**: Monthly trends (Dec 2024 - Nov 2025) and Rolling 7-day (R7) trends (Oct-Nov 2025)
+- **Time Periods**: Monthly trends (Dec 2024 - Nov 2025) and Rolling 7-day (R7) trends (Oct-Nov 2024 & 2025 for year-over-year comparison)
 
 ## 📁 Project Structure
 
@@ -115,7 +115,7 @@ All SQL files in the `sql/` directory output chart-ready data directly. You can 
 - **Long Tenure**: 0.7% → 0.5% (-0.2%)
 - **Short Tenure**: 1.2% → 1.2% (stable, higher than long tenure)
 
-### Rolling 7-Day Trends (Oct-Nov 2025)
+### Rolling 7-Day Trends (Oct-Nov 2024 & 2025 - Year-over-Year Comparison)
 
 #### Spot Allocation
 - **Thanksgiving impact**: Sharp drop in daily values around Nov 27-30
@@ -206,10 +206,10 @@ See `docs/tenure_queries_verification.md` for detailed verification notes.
 - `02_disabled_schedules_monthly_by_tenure.sql` - Monthly disabled schedules % by tenure
 - `03_soft_churn_monthly_by_tenure.sql` - Monthly soft churn rate by tenure
 
-#### Rolling 7-Day (Charts 4-6)
-- `04_spot_allocation_r7_rolling_7day.sql` - R7 spot allocation (Oct-Nov 2025)
-- `05_disabled_schedules_r7_rolling_7day.sql` - R7 disabled schedules % (Oct-Nov 2025)
-- `06_soft_churn_r7_rolling_7day.sql` - R7 soft churn rate (Oct-Nov 2025)
+#### Rolling 7-Day (Charts 4-6) - Year-over-Year Comparison
+- `04_spot_allocation_r7_rolling_7day.sql` - R7 spot allocation (Oct-Nov 2024 & 2025)
+- `05_disabled_schedules_r7_rolling_7day.sql` - R7 disabled schedules % (Oct-Nov 2024 & 2025)
+- `06_soft_churn_r7_rolling_7day.sql` - R7 soft churn rate (Oct-Nov 2024 & 2025)
 
 ### Python Scripts (`scripts/`)
 
