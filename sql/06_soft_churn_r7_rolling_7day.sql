@@ -1,7 +1,7 @@
--- Chart 6: Soft Churn Rate - R7 Rolling 7-Day (Oct-Nov 2024 & 2025)
+-- Chart 6: Soft Churn Rate - R7 Rolling 7-Day (Extended Historical)
 -- Segments: All Fitness, SA Fitness, Non-SA Fitness
 -- Outputs final chart-ready R7 percentage values directly from SQL
--- Includes both 2024 and 2025 for year-over-year comparison
+-- Extended timeframe: Starting from 2023-01-01 (3 years of data - balances accuracy and performance)
 
 with vids as 
 (
@@ -24,7 +24,7 @@ r7_window_calc as
     left join cp_bi_derived.datapipeline.partner_details pd on vac.venue_id = pd.venue_id
     left join cp_bi_derived.datapipeline.salesforce_venues sv on vac.venue_id = sv.venue_id
     INNER JOIN vids vvm on vac.venue_id = vvm.venue_id
-    where vac.date >= '2024-10-01' and vac.date < '2025-12-01'
+    where vac.date >= '2023-01-01' and vac.date < '2025-12-01'
 ),
 daily_metrics as 
 (
