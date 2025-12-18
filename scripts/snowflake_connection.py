@@ -34,11 +34,20 @@ def get_connection(reuse=True):
     # Check if we can reuse existing connection
     if reuse and _cached_connection is not None:
         try:
-            # Test if connection is still valid
-            _cached_connection.cursor().execute("SELECT 1").fetchone()
+            # Test if connection is still valid with timeout
+            cursor = _cached_connection.cursor()
+            cursor.execute("ALTER SESSION SET STATEMENT_TIMEOUT_IN_SECONDS = 10")
+            cursor.execute("SELECT 1").fetchone()
+            cursor.close()
             return _cached_connection
-        except:
-            # Connection is dead, create new one
+        except Exception as e:
+            # Connection is dead or stuck, close it and create new one
+            print(f"⚠️ Existing connection issue detected: {e}")
+            print("   Closing old connection and creating new one...")
+            try:
+                _cached_connection.close()
+            except:
+                pass
             _cached_connection = None
     
     print("Connecting to Snowflake...")
@@ -47,13 +56,21 @@ def get_connection(reuse=True):
     conn = snowflake.connector.connect(**SNOWFLAKE_CONFIG)
     print("✓ Successfully connected to Snowflake!")
     
+    # Set default timeout to prevent hanging queries
+    try:
+        cursor = conn.cursor()
+        cursor.execute("ALTER SESSION SET STATEMENT_TIMEOUT_IN_SECONDS = 3600")  # 1 hour default
+        cursor.close()
+    except:
+        pass
+    
     if reuse:
         _cached_connection = conn
     
     return conn
 
 
-def execute_query(query: str, fetch_data: bool = True, reuse_connection: bool = True):
+def execute_query(query: str, fetch_data: bool = True, reuse_connection: bool = True, timeout_seconds: int = 3600):
     """
     Execute a SQL query and return results as a pandas DataFrame
     
@@ -61,6 +78,7 @@ def execute_query(query: str, fetch_data: bool = True, reuse_connection: bool = 
         query: SQL query string
         fetch_data: If True, returns results. If False, just executes (for INSERT/UPDATE/etc)
         reuse_connection: If True, reuses existing connection to avoid repeated authentication
+        timeout_seconds: Query timeout in seconds (default 3600 = 1 hour)
     
     Returns:
         pandas DataFrame with query results (if fetch_data=True)
@@ -69,6 +87,8 @@ def execute_query(query: str, fetch_data: bool = True, reuse_connection: bool = 
     
     cursor = conn.cursor()
     try:
+        # Set query-specific timeout
+        cursor.execute(f"ALTER SESSION SET STATEMENT_TIMEOUT_IN_SECONDS = {timeout_seconds}")
         cursor.execute(query)
         
         if fetch_data:
@@ -82,6 +102,17 @@ def execute_query(query: str, fetch_data: bool = True, reuse_connection: bool = 
             print("✓ Query executed successfully!")
             return None
             
+    except Exception as e:
+        # If query fails, close connection to prevent reuse of stuck connection
+        if "timeout" in str(e).lower() or "timed out" in str(e).lower():
+            print(f"⚠️ Query timed out after {timeout_seconds} seconds")
+            if reuse_connection and _cached_connection is not None:
+                try:
+                    _cached_connection.close()
+                except:
+                    pass
+                _cached_connection = None
+        raise
     finally:
         cursor.close()
         # Don't close connection if we're reusing it
